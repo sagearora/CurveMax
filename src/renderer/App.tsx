@@ -1,8 +1,8 @@
-import './App.css'
 import React, { useEffect, useState } from 'react'
-import Footer from './components/Footer'
-import DashboardScreen from './screens/Dashboard/DashboardScreen'
+import './App.css'
 import RootContextProvider from './lib/RootContextProvider'
+import AppRouter from './screens/AppRouter'
+import { Toaster } from "@/components/ui/toaster"
 
 
 
@@ -11,7 +11,7 @@ function App() {
   const [base_url, setBaseUrl] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    const unsub = window.electron.ipcRenderer.on('init-response', (data) => {
+    const unsub = window.electron.ipcRenderer.on('init_response', (data) => {
       if (typeof data === 'string') {
         const { token, base_url } = JSON.parse(data)
         setToken(token)
@@ -32,8 +32,8 @@ function App() {
     <RootContextProvider
       token={token}
       base_url={base_url}>
-      <DashboardScreen />
-      <Footer base_url={base_url} token={token} />
+      <AppRouter />
+      <Toaster />
     </RootContextProvider>
   )
 }

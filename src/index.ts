@@ -30,6 +30,7 @@ const createLoginWindow = (base_url: string): void => {
   }
 
   const handler = (details: Electron.OnCompletedListenerDetails) => {
+
     if (details.url.includes(`https://${base_url}/login/authenticate`)) {
       console.log('authenticated. getting token')
       if (details.statusCode === 200 && details.responseHeaders) {
@@ -87,7 +88,7 @@ const createWindow = async (): Promise<void> => {
   // Create the browser window.
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
   const main_session = session.fromPartition('main')
-  const mainWindow = new BrowserWindow({
+  let mainWindow: BrowserWindow|null = new BrowserWindow({
     height: height * .8,
     width: width * .75,
     webPreferences: {
@@ -108,18 +109,27 @@ const createWindow = async (): Promise<void> => {
   })
 
   mainWindow.on('ready-to-show', () => {
+    if (!mainWindow) {
+      return
+    }
     mainWindow.webContents.send('init-response', JSON.stringify({
       base_url,
       token
     }))
   })
 
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
+
   ipcMain.on('signout', () => {
     token = ''
     store.delete('token')
     createLoginWindow(base_url)
-    mainWindow.close()
     ipcMain.removeAllListeners('signout')
+    if (mainWindow) {
+      mainWindow.close()
+    }
   })
 
   // and load the index.html of the app.
@@ -129,10 +139,25 @@ const createWindow = async (): Promise<void> => {
   }
 
   ipcMain.on('init', () => {
-    mainWindow.webContents.send('init-response', JSON.stringify({
+    if (!mainWindow) {
+      return;
+    }
+    mainWindow.webContents.send('init_response', JSON.stringify({
       base_url,
       token
     }))
+  })
+
+  ipcMain.handle('get_from_cache', (_, cache_id) => {
+    return store.get(cache_id)
+  })
+
+  ipcMain.handle('set_in_cache', (_, cache_id, data) => {
+    store.set(cache_id, data)
+  })
+
+  ipcMain.handle('delete_from_cache', (_, cache_id) => {
+    store.delete(cache_id)
   })
 
 };

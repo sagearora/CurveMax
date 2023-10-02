@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { getRecareInfo } from '../../backend/calls'
 import { RecareInfo as RecareInfoType } from '../../backend/types'
 import { useRootContext } from '../../lib/RootContextProvider'
-import { getRecareInfo } from '../../backend/calls'
+import RecareEditable from './RecareEditable'
 
 function RecareInfo({
     patient_id,
@@ -27,13 +28,19 @@ function RecareInfo({
         })();
     }, [patient_id])
 
+    if (loading) {
+        return <div className='space-y-2 animate-pulse'>
+            <div className='bg-slate-200 w-24 h-2 rounded-md'></div>
+            <div className='bg-slate-200 w-64 h-2 rounded-md'></div>
+            <div className='bg-slate-200 w-64 h-2 rounded-md'></div>
+        </div>
+    }
+
     return (
         <div>
-            Recare Info
-            <div>{recare_info.map(info => <div key={info.id}>
-                {info.name} &middot; {info.frequency_months} m | {info.next || 'Not scheduled'} | Due: {info.due || 'Not Set'} | Last: {info.last || 'never'}
-            </div>)}</div>
-            
+            <div>{recare_info.map(info => <RecareEditable key={info.id}
+                item={info} />
+            )}</div>
         </div>
     )
 }

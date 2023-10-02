@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'signout'|'init'|'init-response';
+export type Channels = 'signout'|'init'|'init_response'|'get_from_cache'|'set_in_cache'|'delete_from_cache';
 
 const electronHandler = {
     ipcRenderer: {
@@ -20,6 +20,9 @@ const electronHandler = {
         },
         once(channel: Channels, func: (...args: unknown[]) => void) {
             ipcRenderer.once(channel, (_event, ...args) => func(...args));
+        },
+        invoke(channel: Channels, ...args: unknown[]) {
+            return ipcRenderer.invoke(channel, ...args);
         },
     }
 }
