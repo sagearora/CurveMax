@@ -30,28 +30,20 @@ const createLoginWindow = (_base_url: string, _base_gro_url: string): void => {
     return
   }
 
-  const handler = (details: Electron.OnCompletedListenerDetails) => {
-    if (details.url.includes(`https://${_base_url}/login/authenticate`)) {
-      console.log('authenticated. getting token')
-      if (details.statusCode === 200 && details.responseHeaders) {
-        const cookie = details.responseHeaders['Set-Cookie'][1]
-        token = cookie.split(';')[0].split('=')[1]
-        store.set('token', token)
-        console.log('Curve Hero Token is: ', token)
-        return
-
-      }
+  login_session.webRequest.onSendHeaders({ urls: [`https://${_base_url}/*`, `https://${_base_gro_url}/*`] }, (details) => {
+    if (details.url.includes(`https://${_base_url}/cheetah/clinic`)) {
+      const cookie = details.requestHeaders['Cookie']
+      store.set('token', cookie)
+      token = cookie
+      console.log('Curve Hero cookie', cookie)
+      createWindow()
+      login_window.close()
     }
-  }
-  login_session.webRequest.onCompleted({ urls: [`https://${_base_url}/*`] }, handler);
-  login_session.webRequest.onSendHeaders({ urls: [`https://${_base_gro_url}/*`] }, (details) => {
     if (details.url.includes(`https://${_base_gro_url}/api/link`)) {
       const cookies = details.requestHeaders['Cookie']
       store.set('gro_cookies', cookies)
       gro_cookies = cookies
       console.log('Curve Gro cookies', cookies)
-      createWindow()
-      login_window.close()
     }
   })
 
@@ -63,13 +55,13 @@ const createLoginWindow = (_base_url: string, _base_gro_url: string): void => {
     },
   })
   console.log('opening curve login page')
-  login_window.loadURL(`https://${base_gro_url}`)
+  login_window.loadURL(`https://${_base_gro_url}`)
 }
 
 const testTokenIsValid = async (base_url: string, token: string): Promise<boolean> => {
   return fetch(`https://${base_url}${test_url}`, {
     headers: {
-      'Cookie': `curve_hero_session=${token}`
+      'Cookie': `${token}`
     }
   }).then((response) => {
     if (response.status === 403) {
@@ -112,13 +104,13 @@ const createWindow = async (): Promise<void> => {
   main_session.webRequest.onBeforeSendHeaders({
     urls: [`https://${base_url}/*`, `http://*.${base_url}/*`, `https://${base_gro_url}/*`, `http://*.${base_gro_url}/*`]
   }, (details, callback) => {
-    details.requestHeaders['Cookie'] = `curve_hero_session=${token};${gro_cookies}`
+    details.requestHeaders['Cookie'] = `${token};${gro_cookies}`
     callback({
       cancel: false,
       requestHeaders: details.requestHeaders
     })
   })
- 
+
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       return
@@ -162,7 +154,7 @@ const createWindow = async (): Promise<void> => {
     }))
   })
 
-  
+
 
   ipcMain.handle('get_from_cache', (_, cache_id) => {
     return store.get(cache_id)
