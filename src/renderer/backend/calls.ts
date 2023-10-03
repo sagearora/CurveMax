@@ -1,5 +1,5 @@
 import { RecareEnabledColumns, RecareReportsId as RecareReportId, RecareReportName, ReportCategory } from "./constants"
-import { AppointmentSummary, Correspondence, Note, PatientProfile, RecareInfo, Todo } from "./types"
+import { AppointmentSummary, Correspondence, Note, PatientProfile, RecareInfo, SearchResult, Todo, UserInfo } from "./types"
 
 export const listCorrespondences = async ({
     base_url,
@@ -119,35 +119,10 @@ export const getUserInfo = async ({
 }: {
     base_url: string
 }) => {
-    const res = await fetch(`https://${base_url}`, {
+    const res = await fetch(`https://${base_url}/cheetah/userinfo`, {
         method: 'GET',
     })
-
-    function extractUserInfo(text: string): { user_id: string, user_name: string } | null {
-        // Regular expression to match the JavaScript object inside the script tags
-        const regex = /SYSTEM_PREFERENCES\s*=\s*({[\s\S]*?});/m;
-
-        // Find the match
-        const match = text.match(regex);
-        if (!match) return null;
-
-        try {
-            // Parse the matched string as JSON
-            const jsonObject = JSON.parse(match[1]);
-
-            // Extract user_id and user_name
-            const user_id = String(jsonObject["user_id"]);
-            const user_name = String(jsonObject["user_name"]).trim();
-
-            return { user_id, user_name };
-        } catch (e) {
-            console.error("Error parsing JSON:", e);
-            return null;
-        }
-    }
-    const html = await res.text()
-    const data = extractUserInfo(html)
-    return data
+    return (await res.json()) as UserInfo
 }
 
 const getReportColumns = async ({
@@ -345,4 +320,18 @@ export const deleteNote = async({
     })
     const data = await res.json()
     return data
+}
+
+export const searchCurve = async({
+    base_url,
+    query,
+}: {
+    base_url: string
+    query: string
+}) => {
+    const res = await fetch(`https://${base_url}/cheetah/contacts/search?filter=${query}&statuses=&fields=clientNumber%2Caddress%2Cphones%2Cstatus%2Cnames%2Cnickname%2Csubscriber%2Cdob%2Cthumbnail%2Ccategory&start=0`, {
+        method: 'GET',
+    })
+    const data = await res.json()
+    return data as SearchResult
 }

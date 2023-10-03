@@ -14,18 +14,12 @@ function NoteList() {
         notes,
     ])
 
-
-
-
     if (loading) {
         return <div>Loading...</div>
     }
 
     return (
         <div className='space-y-2 py-4'>
-            <div className='flex items-center'>
-                <div className='text-lg flex-1'>Notes</div>
-            </div>
             <NoteForm
                 loading={creating}
                 submit={addNote}

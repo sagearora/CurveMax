@@ -180,15 +180,16 @@ function RecareReport() {
 
     return (
             <>
-                <div className='text-4xl font-bold mb-4 pt-6'>Recare Follow-up</div>
+                <div className='text-xl font-bold mb-1 pt-6'>Recare Follow-up</div>
+                <div className='mb-4 text-sm text-gray-700'>Updated {dayjs(fetched_at).fromNow()}</div>
                 <RecareFilters
                     filters={filters}
                     setFilters={setFilters}
                     reload={reload}
                 />
-                {loading && <div>Querying report...</div>}
-                {is_max_attempts_reached && <div>Max attempts reached</div>}
-                <div>Updated at: {dayjs(fetched_at).format('YYYY-MM-DD HH:mm:ss')}</div>
+                {loading && <div className='py-16 text-center animate-pulse bg-slate-100 my-8 rounded-50'>
+                    {loading}
+                </div>}
                 <RecareList items={list} />
             </>
     )

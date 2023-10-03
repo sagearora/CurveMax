@@ -3,12 +3,13 @@ import { getUserInfo, listAllReports, setupRecareReport } from '../backend/calls
 import { Loader2 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { RecareReportName, ReportCategory } from '../backend/constants'
+import { UserInfo } from '../backend/types'
 
 export type RootContextProps = {
   base_url: string
+  base_gro_url: string
   token: string
-  user_id: string
-  user_name: string
+  user: UserInfo
   recare_report_id: string
   practice_name: string
   logout: () => void
@@ -20,16 +21,17 @@ const RootContext = createContext<RootContextProps>({} as RootContextProps)
 function RootContextProvider({
   children,
   base_url,
+  base_gro_url,
   token,
 }: {
   children: ReactElement | ReactElement[]
   base_url: string
+  base_gro_url: string
   token: string
 }) {
   const [loading_user, setLoadingUser] = React.useState(false)
   const [loading_reports, setLoadingReports] = React.useState(false)
-  const [user_id, setUserId] = React.useState<string | undefined>(undefined)
-  const [user_name, setUserName] = React.useState<string | undefined>(undefined)
+  const [user, setUser] = React.useState<UserInfo | undefined>(undefined)
   const [recare_report_id, setRecareReportId] = React.useState<string | null>(null)
 
   const logout = () => {
@@ -44,8 +46,7 @@ function RootContextProvider({
         if (!data) {
           return;
         }
-        setUserId(data.user_id)
-        setUserName(data.user_name)
+        setUser(data)
       } finally {
         setLoadingUser(false)
       }
@@ -80,7 +81,7 @@ function RootContextProvider({
     return <div><Loader2 className='h-4 w-4 animate-spin' /></div>
   }
 
-  if (!user_id || !user_name) {
+  if (!user) {
     return <div className='flex flex-col items-center justify-center min-h-screen space-y-4'>
       <div className='text-4xl font-bold'>
         Welcome back
@@ -102,8 +103,9 @@ function RootContextProvider({
   return (
     <RootContext.Provider value={{
       base_url,
-      token, user_id,
-      user_name,
+      base_gro_url,
+      token, 
+      user,
       recare_report_id,
       practice_name: 'Arora Dental',
       logout,

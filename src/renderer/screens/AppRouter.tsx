@@ -2,7 +2,9 @@ import React from 'react'
 import { RouterProvider, createHashRouter } from 'react-router-dom'
 import Layout from '../components/Layout'
 import DashboardScreen from './Dashboard/DashboardScreen'
+import PatientScreen from './Patient/PatientScreen'
 import PatientRecareScreen from './PatientRecare/PatientRecareScreen'
+import TodosProvider from '../components/todos/TodosProvider'
 
 const router = createHashRouter([
     {
@@ -13,15 +15,22 @@ const router = createHashRouter([
             element: <DashboardScreen />,
             children: [{
                 path: ':patient_id',
-                element: <PatientRecareScreen />
+                element: <PatientScreen />
             }]
-        }]
+        },
+        {
+            path: 'p/:patient_id',
+            element: <PatientScreen />
+        }
+        ]
     }
 ])
 
 function AppRouter() {
     return (
-        <RouterProvider router={router} />
+        <TodosProvider>
+            <RouterProvider router={router} />
+        </TodosProvider>
     )
 }
 

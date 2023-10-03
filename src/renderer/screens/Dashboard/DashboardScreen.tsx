@@ -1,20 +1,17 @@
 import React from 'react'
-import RecareReport from './RecareReport'
 import { Outlet } from 'react-router-dom'
-import TodosProvider from '../../components/todos/TodosProvider'
+import RecareReport from './RecareReport'
 
 function DashboardScreen() {
   return (
-    <TodosProvider>
-      <div className='px-4 py-16 flex h-screen items-stretch relative space-x-2'>
-        <div className='w-1/3 overflow-y-auto'>
-          <RecareReport />
-        </div>
-        <div className='sticky top-0 flex-1 overflow-y-auto rounded-md shadow-md border-2 p-4'>
-          <Outlet />
-        </div>
+    <div className='flex h-full items-stretch relative'>
+      <div className='w-1/3 pr-4 overflow-y-auto'>
+        <RecareReport />
       </div>
-    </TodosProvider>
+      <div className='sticky top-24 right-0 w-2/3 h-[84vh] overflow-y-auto rounded-md shadow-md border-2 p-4'>
+        <Outlet />
+      </div>
+    </div>
   )
 }
 

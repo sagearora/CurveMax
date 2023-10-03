@@ -2,22 +2,46 @@ import { StepProps } from "./StepProps"
 
 export const RecareFlowchart = (
     patient_name: string,
+    patient_phone: string,
     user_name: string,
     practice_name: string,
 ): {
     [id: string]: StepProps
 } => ({
     "start": {
-        "message": `Call ${patient_name} for Recare booking`,
-        "script": `Hello, may I speak with ${patient_name}? This is ${user_name} calling from ${practice_name}.`,
+        "message": `Engage ${patient_name} for Recare booking`,
+        "script": `Start with "Text Now" flow first. If you don't get a response in a few days, use the "Call Now" flow next.`,
         "options": [{
-            "label": "Call Now",
-            "nextStep": "didAnswer"
+            "label": "Text Now",
+            "nextStep": "textFollowup"
+        }, {
+            "label": `Call Now: ${patient_phone}`,
+            "nextStep": "didAnswer",
+            "action": {
+                call: true,
+            }
+        }],
+    },
+    "textFollowup": {
+        "message": `Text ${patient_name} for Recare booking`,
+        "script": "Please customize the text message as needed below.",
+        "requireNote": true,
+        "note": `Hi ${patient_name}, I noticed that you are due for your dental check-up and cleaning at ${practice_name}. I can help you set up a time that works best for you. Simply reply with your preference for: 📆 Weekdays or Weekends and time: ☀️ Morning, Afternoon, or Evening. Or you can give me a call at 📞 519-340-2222.`,
+        "options": [{
+            "label": "Send text",
+            "nextStep": "done",
+            "action": {
+                text: true,
+                note: {
+                    days: 3,
+                    description: 'Text sent to patient for recare. Please follow up in 3 days.',
+                }
+            }
         }],
     },
     "didAnswer": {
         "message": `Did ${patient_name} Answer?`,
-        "script": "",
+        "script": `Hello, may I speak with ${patient_name}? This is ${user_name} calling from ${practice_name}.`,
         "options": [
             {
                 "label": "Yes",
@@ -40,8 +64,9 @@ export const RecareFlowchart = (
                 "label": "Yes",
                 "nextStep": "bookingConfirmed",
                 action: {
-                    description: `Booking made by ${user_name} with CurveMax`,
-                    nextStep: 'done',
+                    note: {
+                        description: `Booking made by ${user_name} with CurveMax`,
+                    }
                 }
             },
             {
@@ -59,9 +84,10 @@ export const RecareFlowchart = (
             "label": "Schedule Follow Up",
             "nextStep": "done",
             "action": {
-                days: 3,
-                description: 'Voicemail left for patient for recare. Please follow up in 3 days',
-                nextStep: 'done',
+                note: {
+                    days: 3,
+                    description: 'Voicemail left for patient for recare. Please follow up in 3 days',
+                }
             }
         }]
     },
@@ -75,8 +101,9 @@ export const RecareFlowchart = (
                 "label": "Ready To Book",
                 "nextStep": "bookingConfirmed",
                 action: {
-                    description: `Booking made by ${user_name} with CurveMax`,
-                    nextStep: 'done',
+                    note: {
+                        description: `Booking made by ${user_name} with CurveMax`,
+                    },
                 }
             },
             { "label": "Not Ready To Book", "nextStep": "offerFollowUp" }]
@@ -90,9 +117,10 @@ export const RecareFlowchart = (
             "label": "Create Follow Up Note",
             "nextStep": "done",
             "action": {
-                description: `Follow up for recare in 2 weeks. ${patient_name} had the following concerns:`,
-                nextStep: 'done',
-                days: 14
+                note: {
+                    description: `Follow up for recare in 2 weeks. ${patient_name} had the following concerns:`,
+                    days: 21
+                },
             }
         }]
     },

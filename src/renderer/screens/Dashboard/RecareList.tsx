@@ -9,7 +9,7 @@ function RecareList({
 }) {
     const { todos } = useTodos()
     return (
-        <div>
+        <div className='py-8'>
             {items.map((patient) => (
                 <CorrespondenceItem key={patient.patient_id}
                     {...patient}

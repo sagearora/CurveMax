@@ -1,3 +1,14 @@
+export type UserInfo = {
+    "x-cdnewco-username": string;
+    "x-cdnewco-user_id": string;
+    sub: string;
+    email: string;
+    name: string;
+    given_name: string;
+    middle_name: string | null;
+    family_name: string;
+}
+
 export type Correspondence = {
     activity: string;
     description: string;
@@ -170,4 +181,31 @@ export type Todo = {
         due_date: string
     }
     note_tags?: { name: string }[]
+}
+
+export interface SearchItem {
+    id: string;
+    client_number: string;
+    address_line1: string;
+    address_line2: string | null;
+    home_phone_number: string | null;
+    home_phone_extension: string;
+    work_phone_number: string | null;
+    work_phone_extension: string;
+    cell_phone_number: string;
+    cell_phone_extension: string;
+    status: string;
+    last_name: string;
+    first_name: string;
+    middle_name: string;
+    nick_name: string;
+    is_subscriber: boolean;
+    dob: string;
+    thumb: string | null;
+    category: string;
+}
+
+export interface SearchResult {
+    label: string;
+    items: SearchItem[];
 }

@@ -1,37 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
-import { getPatient } from '../../backend/calls'
-import { PatientProfile } from '../../backend/types'
-import NoteList from '../../components/notes/Notes'
-import { useRootContext } from '../../lib/RootContextProvider'
-import RecareInfo from './RecareInfo'
-import AppointmentBooking from './BookingHelper'
-import NotesProvider from '../../components/notes/NotesProvider'
 import MessageHistory from '../../components/messaging/MessageHistory'
-import { Tabs } from '@radix-ui/react-tabs'
-import { TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
 import MessagingProvider from '../../components/messaging/MessageProvider'
+import NoteList from '../../components/notes/Notes'
+import NotesProvider from '../../components/notes/NotesProvider'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
+import AppointmentBooking from '../PatientRecare/BookingHelper'
+import RecareInfo from '../PatientRecare/RecareInfo'
+import { useGetPatient } from './useGetPatient'
 
-function PatientRecareScreen() {
-    const { base_url } = useRootContext()
+function PatientScreen() {
     const patient_id = useParams().patient_id as string
-    const [loading, setLoading] = useState(false)
-    const [patient, setPatient] = useState<PatientProfile>()
-
-    useEffect(() => {
-        (async () => {
-            try {
-                setLoading(true)
-                const patient = await getPatient({
-                    base_url,
-                    patient_id
-                })
-                setPatient(patient)
-            } finally {
-                setLoading(false)
-            }
-        })();
-    }, [patient_id, base_url])
+    const { patient, loading } = useGetPatient(patient_id)
 
     if (loading) {
         return <div className='animate-pulse'>
@@ -44,7 +24,7 @@ function PatientRecareScreen() {
     }
 
     return (
-        <div>
+        <>
             <div className='text-2xl font-bold'>{patient.firstName} {patient.lastName}</div>
             <div>{patient.birthDate}</div>
             <RecareInfo
@@ -72,8 +52,8 @@ function PatientRecareScreen() {
                     </Tabs>
                 </MessagingProvider>
             </NotesProvider>
-        </div>
+        </>
     )
 }
 
-export default PatientRecareScreen
+export default PatientScreen
