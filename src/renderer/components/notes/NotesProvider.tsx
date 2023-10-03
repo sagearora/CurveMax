@@ -21,7 +21,7 @@ function NotesProvider({
     children: ReactElement | ReactElement[]
     patient_id: string
 }) {
-    const { base_url, user_name } = useRootContext()
+    const { base_url, user: { name } } = useRootContext()
     const [loading, setLoading] = useState(false)
     const [notes, setNotes] = useState<Note[]>([])
     const [creating, setCreating] = useState(false)
@@ -47,7 +47,7 @@ function NotesProvider({
             const note = await createNote({
                 base_url,
                 patient_id,
-                description: `${description}<br/><div>- ${user_name}</div>`,
+                description: `${description}<br/><div>- ${name}</div>`,
                 due_date,
             })
             if (note.item) {
