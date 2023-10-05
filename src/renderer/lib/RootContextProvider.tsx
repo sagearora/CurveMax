@@ -80,6 +80,7 @@ function RootContextProvider({
   if (loading_user || loading_reports) {
     return <div><Loader2 className='h-4 w-4 animate-spin' /></div>
   }
+  console.log(user)
 
   if (!user) {
     return <div className='flex flex-col items-center justify-center min-h-screen space-y-4'>

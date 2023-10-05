@@ -31,6 +31,9 @@ export type Note = {
         id: number;
         name: string
     }[]
+    todo: {
+        due_date: string|null
+    }
 }
 
 export type AppointmentSummary = {

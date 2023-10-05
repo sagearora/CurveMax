@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTodos } from '../../components/todos/TodosProvider'
-import CorrespondenceItem, { CorrespondenceItemProps } from './CorrespondenceItem'
+import RecareListItem, { CorrespondenceItemProps } from './RecareListItem'
 
 function RecareList({
     items,
@@ -11,7 +11,7 @@ function RecareList({
     return (
         <div className='py-8'>
             {items.map((patient) => (
-                <CorrespondenceItem key={patient.patient_id}
+                <RecareListItem key={patient.patient_id}
                     {...patient}
                     todos={todos[patient.patient_id]}
                 />

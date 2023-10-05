@@ -85,7 +85,7 @@ export const RecareFlowchart = (
             "nextStep": "done",
             "action": {
                 note: {
-                    days: 3,
+                    days: 7,
                     description: 'Voicemail left for patient for recare. Please follow up in 3 days',
                 }
             }

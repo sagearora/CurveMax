@@ -114,6 +114,22 @@ export const createNote = async ({
     }
 }
 
+export const completeTodoOrMemo = async ({
+    base_url,
+    note_id,
+}: {
+    base_url: string
+    note_id: number
+}) => {
+    const res = await fetch(`https://${base_url}/note/completeTodoOrMemo/${note_id}`, {
+        method: 'POST',
+    })
+    return await res.json() as {
+        success: boolean
+        item: Note
+    }
+}
+
 export const getUserInfo = async ({
     base_url,
 }: {
@@ -122,7 +138,10 @@ export const getUserInfo = async ({
     const res = await fetch(`https://${base_url}/cheetah/userinfo`, {
         method: 'GET',
     })
-    return (await res.json()) as UserInfo
+    if (res.status === 200) {
+        return (await res.json()) as UserInfo
+    }
+    return null
 }
 
 const getReportColumns = async ({
@@ -308,7 +327,7 @@ export const listTodos = async ({
     return data
 }
 
-export const deleteNote = async({
+export const deleteNote = async ({
     base_url,
     note_id,
 }: {
@@ -322,7 +341,7 @@ export const deleteNote = async({
     return data
 }
 
-export const searchCurve = async({
+export const searchCurve = async ({
     base_url,
     query,
 }: {

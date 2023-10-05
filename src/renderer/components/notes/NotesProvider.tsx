@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import { createNote, getNotes, deleteNote as  deleteNoteCurve } from '../../backend/calls'
+import { createNote, getNotes, deleteNote as deleteNoteCurve, completeTodoOrMemo } from '../../backend/calls'
 import { Note } from '../../backend/types'
 import { useRootContext } from '../../lib/RootContextProvider'
 import { createErrorToast } from '../../lib/createErrorToast'
@@ -9,7 +9,8 @@ export type NotesContextType = {
     addNote: (text: string, due_date?: string) => Promise<boolean>
     loading?: boolean
     creating?: boolean
-    deleteNote: (note: Note) => Promise<boolean>
+    deleteNote: (note_id: number) => Promise<boolean>
+    completeNote: (note_id: number) => Promise<boolean>
 }
 
 const NotesContext = React.createContext<NotesContextType>({} as NotesContextType)
@@ -62,13 +63,32 @@ function NotesProvider({
         }
     }
 
-    const deleteNote = async(note: Note) => {
+    const deleteNote = async (note_id: number) => {
         try {
             await deleteNoteCurve({
                 base_url,
-                note_id: note.id,
+                note_id: note_id,
             })
-            setNotes(n => n.filter(n => n.id !== note.id))
+            setNotes(n => n.filter(n => n.id !== note_id))
+            return true
+        } catch (e) {
+            createErrorToast(e)
+            return false
+        }
+    }
+
+    const completeNote = async (note_id: number) => {
+        try {
+            const result = await completeTodoOrMemo({
+                base_url,
+                note_id,
+            })
+            setNotes(n => n.map(n => {
+                if (n.id === note_id) {
+                    return result.item
+                }
+                return n
+            }))
             return true
         } catch (e) {
             createErrorToast(e)
@@ -81,6 +101,7 @@ function NotesProvider({
             notes,
             addNote,
             deleteNote,
+            completeNote,
             loading,
             creating,
         }}>
