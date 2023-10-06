@@ -14,6 +14,12 @@ import { rendererConfig } from './webpack.renderer.config';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    osxSign: {},
+    osxNotarize: {
+      appleApiKey: `AuthKey_G98YDGZ5NJ`,
+      appleApiKeyId: 'G98YDGZ5NJ',
+      appleApiIssuer: '89842ee3-92a9-4810-a3d0-dcc7d69a0fb8',
+    }
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
